@@ -1,6 +1,7 @@
 #[derive(Debug, PartialEq, Eq)]
 struct Score {
-    // TODO ?
+    p1: i64,
+    p2: i64,
 }
 
 impl std::fmt::Display for Score {
@@ -2400,21 +2401,31 @@ mod test {
         for test in tests {
             let mut score = super::Score::new();
             assert_eq!(format!("{score}"), "0-0");
-            for (player, expected) in test {
+            for (step, (player, expected)) in test.iter().enumerate() {
                 match score.point(*player) {
                     crate::tennis::IncResult::Continue(s) => {
                         score = s;
-                        assert_eq!(format!("{score}"), *expected);
+                        let fscore = format!("{score}");
+                        if fscore != *expected {
+                            panic!(
+                                "expected {} but got {} ({:?}) at step {} of test {:?}",
+                                expected, score, score, step, test
+                            );
+                        }
                     }
                     crate::tennis::IncResult::Winner(w) => {
-                        assert_eq!(
-                            match w {
-                                P1 => "winner 1",
-                                P2 => "winner 2",
-                            },
-                            *expected
-                        );
-                        break;
+                        if match w {
+                            P1 => "winner 1",
+                            P2 => "winner 2",
+                        } == *expected
+                        {
+                            break;
+                        } else {
+                            panic!(
+                                "expected {} but got winner {:?} at step {} of test {:?}",
+                                expected, w, step, test
+                            );
+                        }
                     }
                 }
             }
