@@ -2,7 +2,9 @@
 #![allow(unused_variables, dead_code)]
 
 fn add(a: u32, b: i16) -> u64 {
-    todo!()
+    let sum: u64 = a + b;
+
+    return sum;
 }
 
 fn third<A>(t: &[A; 4]) -> &A {
